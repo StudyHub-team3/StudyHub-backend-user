@@ -1,7 +1,7 @@
 package com.studyhub.backend_user.api.open;
 
 import com.studyhub.backend_user.common.dto.ApiResponseDto;
-import com.studyhub.backend_user.domain.dto.SIteUserLoginDto;
+import com.studyhub.backend_user.domain.dto.SiteUserLoginDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRegisterDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/user/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserAuthController {
     @PostMapping(value = "/login")
-    public ApiResponseDto<String> login(@RequestBody @Valid SIteUserLoginDto loginDto) {
+    public ApiResponseDto<String> login(@RequestBody @Valid SiteUserLoginDto loginDto) {
         return ApiResponseDto.createOk("AccessRefreshToken");
     }
 

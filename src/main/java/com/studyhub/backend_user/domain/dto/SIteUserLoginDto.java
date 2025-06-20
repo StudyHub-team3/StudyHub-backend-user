@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SIteUserLoginDto {
+public class SiteUserLoginDto {
     @NotBlank(message = "사용자 이메일을 입력하세요.")
     private String email;
 
