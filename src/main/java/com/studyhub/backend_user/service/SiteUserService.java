@@ -3,6 +3,7 @@ package com.studyhub.backend_user.service;
 import com.studyhub.backend_user.common.exception.BadParameter;
 import com.studyhub.backend_user.common.exception.NotFound;
 import com.studyhub.backend_user.domain.SiteUser;
+import com.studyhub.backend_user.domain.dto.SiteUserInfoDto;
 import com.studyhub.backend_user.domain.dto.SiteUserLoginDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRegisterDto;
 import com.studyhub.backend_user.domain.repository.SiteUserRepository;
@@ -42,5 +43,12 @@ public class SiteUserService {
     @Transactional
     public void logout() {
         // TODO: Refresh Token의 폐기 처리
+    }
+
+    @Transactional
+    public SiteUserInfoDto.Response getUserInfo(Long userId) {
+        SiteUser user = siteUserRepository.findById(userId).orElseThrow(() -> new NotFound("찾을 수 없는 사용자입니다."));
+
+        return SiteUserInfoDto.Response.fromEntity(user);
     }
 }

@@ -19,12 +19,15 @@ public class UserController {
 
     @GetMapping(value = "/{userId}/info")
     public ApiResponseDto<SiteUserInfoDto.Response> getUserInfo(@PathVariable(value = "userId") Long userId) {
-        return ApiResponseDto.createOk(new SiteUserInfoDto.Response());
+        SiteUserInfoDto.Response resposne = siteUserService.getUserInfo(userId);
+        return ApiResponseDto.createOk(resposne);
     }
 
     @GetMapping(value = "/my/info")
     public ApiResponseDto<SiteUserInfoDto.Response> getMyInfo() {
-        return ApiResponseDto.createOk(new SiteUserInfoDto.Response());
+        // TODO: header에서 userId 추출 (api-gateway에서 전처리하여 header에 저장)
+        SiteUserInfoDto.Response resposne = siteUserService.getUserInfo(1L);
+        return ApiResponseDto.createOk(resposne);
     }
 
     @PutMapping(value = "/my/info")
