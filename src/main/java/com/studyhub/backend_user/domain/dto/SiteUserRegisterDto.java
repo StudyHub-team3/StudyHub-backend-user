@@ -29,6 +29,8 @@ public class SiteUserRegisterDto {
         siteUser.setName(this.name);
         siteUser.setPhoneNumber(this.phoneNumber);
         siteUser.setPassword(this.password);
+        siteUser.setCreatedAt(LocalDateTime.now());
+        siteUser.setUpdatedAt(LocalDateTime.now());
 
         return siteUser;
     }
