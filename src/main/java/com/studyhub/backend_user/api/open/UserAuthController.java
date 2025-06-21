@@ -2,7 +2,10 @@ package com.studyhub.backend_user.api.open;
 
 import com.studyhub.backend_user.common.dto.ApiResponseDto;
 import com.studyhub.backend_user.domain.dto.SiteUserLoginDto;
+import com.studyhub.backend_user.domain.dto.SiteUserLogoutDto;
+import com.studyhub.backend_user.domain.dto.SiteUserRefreshDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRegisterDto;
+import com.studyhub.backend_user.secret.dto.TokenDto;
 import com.studyhub.backend_user.service.SiteUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +24,10 @@ public class UserAuthController {
     private final SiteUserService siteUserService;
 
     @PostMapping(value = "/login")
-    public ApiResponseDto<String> login(@RequestBody @Valid SiteUserLoginDto loginDto) {
-        siteUserService.login(loginDto);
-        return ApiResponseDto.createOk("AccessRefreshToken");
+    public ApiResponseDto<TokenDto.AccessRefreshToken> login(@RequestBody @Valid SiteUserLoginDto loginDto) {
+        // TODO: deviceType을 header에서 추출하도록 수정
+        TokenDto.AccessRefreshToken accessRefreshToken = siteUserService.login(loginDto);
+        return ApiResponseDto.createOk(accessRefreshToken);
     }
 
     @PostMapping(value = "/register")
@@ -32,9 +36,17 @@ public class UserAuthController {
         return ApiResponseDto.defaultOk();
     }
 
+    @PostMapping(value = "/refresh")
+    public ApiResponseDto<TokenDto.AccessRefreshToken> refresh(@RequestBody @Valid SiteUserRefreshDto refreshDto) {
+        // TODO: userId를 header에서 추출하도록 수정
+        // TODO: deviceType을 header에서 추출하도록 수정
+        TokenDto.AccessRefreshToken accessRefreshToken = siteUserService.refresh(1L, refreshDto);
+        return ApiResponseDto.createOk(accessRefreshToken);
+    }
+
     @PostMapping(value = "/logout")
-    public ApiResponseDto<String> logout() {
-        siteUserService.logout();
+    public ApiResponseDto<String> logout(@RequestBody @Valid SiteUserLogoutDto logoutDto) {
+        siteUserService.logout(logoutDto);
         return ApiResponseDto.defaultOk();
     }
 }
