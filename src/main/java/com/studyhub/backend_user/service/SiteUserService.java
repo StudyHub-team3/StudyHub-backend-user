@@ -8,6 +8,7 @@ import com.studyhub.backend_user.domain.dto.SiteUserLoginDto;
 import com.studyhub.backend_user.domain.dto.SiteUserModifyDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRegisterDto;
 import com.studyhub.backend_user.domain.repository.SiteUserRepository;
+import com.studyhub.backend_user.secret.hash.SecureHashUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,9 @@ public class SiteUserService {
             throw new NotFound("아이디 혹은 비밀번호를 확인하세요.");
         }
 
-        // TODO: 암호화 적용 후 비밀번호 비교 로직 수정
-        if (!user.getPassword().equals(loginDto.getPassword())) {
+        log.info("{}, {}", SecureHashUtils.hash(loginDto.getPassword()), user.getPassword());
+
+        if (!SecureHashUtils.match(loginDto.getPassword(), user.getPassword())) {
             throw new BadParameter("아이디 혹은 비밀번호를 확인하세요.");
         }
 
@@ -57,8 +59,7 @@ public class SiteUserService {
     public SiteUserInfoDto.Response updateUserInfo(Long userId, SiteUserModifyDto modifyDto) {
         SiteUser user = siteUserRepository.findById(userId).orElseThrow(() -> new NotFound("찾을 수 없는 사용자입니다."));
 
-        // TODO: 암호화된 비밀번호 비교 로직 수정
-        if (!user.getPassword().equals(modifyDto.getPassword())) {
+        if (!SecureHashUtils.match(modifyDto.getPassword(), user.getPassword())) {
             throw new BadParameter("사용자 정보를 수정할 수 없습니다.");
         }
 

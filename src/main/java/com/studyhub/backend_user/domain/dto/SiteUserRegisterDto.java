@@ -1,6 +1,7 @@
 package com.studyhub.backend_user.domain.dto;
 
 import com.studyhub.backend_user.domain.SiteUser;
+import com.studyhub.backend_user.secret.hash.SecureHashUtils;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,8 +29,7 @@ public class SiteUserRegisterDto {
         siteUser.setEmail(this.email);
         siteUser.setName(this.name);
         siteUser.setPhoneNumber(this.phoneNumber);
-        // TODO: password 암호화 적용
-        siteUser.setPassword(this.password);
+        siteUser.setPassword(SecureHashUtils.hash(this.password));
         siteUser.setCreatedAt(LocalDateTime.now());
         siteUser.setUpdatedAt(LocalDateTime.now());
 
