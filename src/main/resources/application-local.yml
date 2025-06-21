@@ -19,4 +19,7 @@ spring:
 
 jwt:
   header: Authorization
+  expires-in: 604800 # 7 days
+  mobile-expires-in: 31536000 # 1 year
+  tablet-expires-in: 31536000 # 1 year
   secret-key: ${JWT_KEY}
