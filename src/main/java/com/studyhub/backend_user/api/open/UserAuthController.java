@@ -22,6 +22,7 @@ public class UserAuthController {
 
     @PostMapping(value = "/login")
     public ApiResponseDto<String> login(@RequestBody @Valid SiteUserLoginDto loginDto) {
+        siteUserService.login(loginDto);
         return ApiResponseDto.createOk("AccessRefreshToken");
     }
 
