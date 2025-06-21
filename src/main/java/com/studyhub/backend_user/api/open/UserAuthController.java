@@ -34,6 +34,7 @@ public class UserAuthController {
 
     @PostMapping(value = "/logout")
     public ApiResponseDto<String> logout() {
+        siteUserService.logout();
         return ApiResponseDto.defaultOk();
     }
 }

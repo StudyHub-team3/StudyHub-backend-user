@@ -38,4 +38,9 @@ public class SiteUserService {
 
         // TODO: 로그인 성공 시, 토큰 반화
     }
+
+    @Transactional
+    public void logout() {
+        // TODO: Refresh Token의 폐기 처리
+    }
 }
