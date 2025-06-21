@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class JwtConfigProperties {
-    private Integer expireIn;
-    private Integer mobileExpireIn;
-    private Integer tabletExpireIn;
+    private Integer expiresIn;
+    private Integer mobileExpiresIn;
+    private Integer tabletExpiresIn;
     private String secretKey;
 }

@@ -6,11 +6,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenGenerator {
@@ -19,7 +21,7 @@ public class TokenGenerator {
 
     private SecretKey getSecretKey() {
         if (secretKey == null) {
-            synchronized (this){
+            synchronized (this) {
                 if (secretKey == null) {
                     secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtConfigProperties.getSecretKey()));
                 }
@@ -61,17 +63,17 @@ public class TokenGenerator {
     }
 
     private int getTokenExpireIn(boolean refreshToken, String deviceType) {
-        int tokenExpireIn = 60 * 15; // 15분 (AccessToken Default)
+        int tokenExpireIn = 60 * 60; // 60분 (AccessToken Default)
 
         if (refreshToken) {
             if ("MOBILE".equals(deviceType)) {
-                tokenExpireIn = jwtConfigProperties.getMobileExpireIn();
+                tokenExpireIn = jwtConfigProperties.getMobileExpiresIn();
             }
             else if ("TABLET".equals(deviceType)) {
-                tokenExpireIn = jwtConfigProperties.getTabletExpireIn();
+                tokenExpireIn = jwtConfigProperties.getTabletExpiresIn();
             }
             else {
-                tokenExpireIn = jwtConfigProperties.getExpireIn();
+                tokenExpireIn = jwtConfigProperties.getExpiresIn();
             }
         }
 

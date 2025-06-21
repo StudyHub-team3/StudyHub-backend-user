@@ -1,23 +1,24 @@
 package com.studyhub.backend_user.secret.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TokenDto {
+    @Getter
     @AllArgsConstructor
     public static class JwtToken {
         private String token;
         private Integer expiresIn;
     }
 
+    @Getter
     @AllArgsConstructor
     public static class AccessToken {
         private JwtToken access;
     }
 
+    @Setter
+    @Getter
     @AllArgsConstructor
     public static class AccessRefreshToken {
         private JwtToken access;
