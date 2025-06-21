@@ -4,6 +4,7 @@ import com.studyhub.backend_user.common.dto.ApiResponseDto;
 import com.studyhub.backend_user.common.exception.BadParameter;
 import com.studyhub.backend_user.common.exception.ClientError;
 import com.studyhub.backend_user.common.exception.NotFound;
+import com.studyhub.backend_user.common.exception.Unauthorized;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,14 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @Order(value=1) //순위 부여
 @RestControllerAdvice
 public class ApiCommonAdvice {
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler({Unauthorized.class})
+    public ApiResponseDto<String> handleUnauthrized(Unauthorized e) {
+        return ApiResponseDto.createError(
+                e.getErrorCode(),
+                e.getErrorMessage()
+        );
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({BadParameter.class})
@@ -58,7 +67,7 @@ public class ApiCommonAdvice {
     public ApiResponseDto<String> handleException(Exception e) {
         return ApiResponseDto.createError(
                 "ServerError",
-                "서버 에버입니다."
+                e.getMessage()
         );
     }
 }
