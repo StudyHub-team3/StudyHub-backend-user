@@ -45,4 +45,9 @@ public class SiteUser {
     @Getter @Setter
     private Boolean deleted = false;
 
+    public void updateUser(String name, String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

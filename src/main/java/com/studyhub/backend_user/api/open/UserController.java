@@ -32,6 +32,8 @@ public class UserController {
 
     @PutMapping(value = "/my/info")
     public ApiResponseDto<SiteUserInfoDto.Response> updateMyInfo(@RequestBody @Valid SiteUserModifyDto modifyDto) {
-        return ApiResponseDto.createOk(new SiteUserInfoDto.Response());
+        // TODO: header에서 userId 추출 (api-gateway에서 전처리하여 header에 저장)
+        SiteUserInfoDto.Response response = siteUserService.updateUserInfo(1L, modifyDto);
+        return ApiResponseDto.createOk(response);
     }
 }

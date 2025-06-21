@@ -5,6 +5,7 @@ import com.studyhub.backend_user.common.exception.NotFound;
 import com.studyhub.backend_user.domain.SiteUser;
 import com.studyhub.backend_user.domain.dto.SiteUserInfoDto;
 import com.studyhub.backend_user.domain.dto.SiteUserLoginDto;
+import com.studyhub.backend_user.domain.dto.SiteUserModifyDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRegisterDto;
 import com.studyhub.backend_user.domain.repository.SiteUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,20 @@ public class SiteUserService {
     @Transactional
     public SiteUserInfoDto.Response getUserInfo(Long userId) {
         SiteUser user = siteUserRepository.findById(userId).orElseThrow(() -> new NotFound("찾을 수 없는 사용자입니다."));
+
+        return SiteUserInfoDto.Response.fromEntity(user);
+    }
+
+    @Transactional
+    public SiteUserInfoDto.Response updateUserInfo(Long userId, SiteUserModifyDto modifyDto) {
+        SiteUser user = siteUserRepository.findById(userId).orElseThrow(() -> new NotFound("찾을 수 없는 사용자입니다."));
+
+        // TODO: 암호화된 비밀번호 비교 로직 수정
+        if (!user.getPassword().equals(modifyDto.getPassword())) {
+            throw new BadParameter("사용자 정보를 수정할 수 없습니다.");
+        }
+
+        user.updateUser(modifyDto.getName(), modifyDto.getPhoneNumber());
 
         return SiteUserInfoDto.Response.fromEntity(user);
     }
