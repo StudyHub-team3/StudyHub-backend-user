@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/user/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/users/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserAuthController {
     @PostMapping(value = "/login")
     public ApiResponseDto<String> login(@RequestBody @Valid SiteUserLoginDto loginDto) {

@@ -13,17 +13,22 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/user", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
     private final SiteUserService siteUserService;
 
-    @GetMapping(value = "/info/{userId}")
-    public ApiResponseDto<SiteUserInfoDto.Response> getUserInfo(@RequestBody @Valid SiteUserInfoDto.Request infoDto) {
+    @GetMapping(value = "/{userId}/info")
+    public ApiResponseDto<SiteUserInfoDto.Response> getUserInfo(@PathVariable(value = "userId") Long userId) {
         return ApiResponseDto.createOk(new SiteUserInfoDto.Response());
     }
 
-    @PutMapping(value = "/info/{userId}")
-    public ApiResponseDto<SiteUserInfoDto.Response> putUserInfo(@RequestBody @Valid SiteUserModifyDto modifyDto) {
+    @GetMapping(value = "/my/info")
+    public ApiResponseDto<SiteUserInfoDto.Response> getMyInfo() {
+        return ApiResponseDto.createOk(new SiteUserInfoDto.Response());
+    }
+
+    @PutMapping(value = "/my/info")
+    public ApiResponseDto<SiteUserInfoDto.Response> updateMyInfo(@RequestBody @Valid SiteUserModifyDto modifyDto) {
         return ApiResponseDto.createOk(new SiteUserInfoDto.Response());
     }
 }
