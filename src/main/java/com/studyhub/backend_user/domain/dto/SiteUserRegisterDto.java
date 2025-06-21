@@ -28,6 +28,7 @@ public class SiteUserRegisterDto {
         siteUser.setEmail(this.email);
         siteUser.setName(this.name);
         siteUser.setPhoneNumber(this.phoneNumber);
+        // TODO: password 암호화 적용
         siteUser.setPassword(this.password);
         siteUser.setCreatedAt(LocalDateTime.now());
         siteUser.setUpdatedAt(LocalDateTime.now());
