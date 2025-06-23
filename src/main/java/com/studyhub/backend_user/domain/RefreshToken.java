@@ -26,10 +26,6 @@ public class RefreshToken {
     @Getter @Setter
     private String token;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "device_type", nullable = false, length = 20)
-    private DeviceType deviceType;
-
     @Column(name = "expired_at", nullable = false)
     @Getter @Setter
     private LocalDateTime expiredAt;
@@ -43,10 +39,9 @@ public class RefreshToken {
     private LocalDateTime revokedAt;
 
     @Builder
-    public RefreshToken(SiteUser user, String token, String deviceType, LocalDateTime expiredAt) {
+    public RefreshToken(SiteUser user, String token, LocalDateTime expiredAt) {
         this.user = user;
         this.token = token;
-        this.deviceType = DeviceType.fromString(deviceType);
         this.expiredAt = expiredAt;
         this.createdAt = LocalDateTime.now();
     }

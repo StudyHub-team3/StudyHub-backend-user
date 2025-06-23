@@ -37,8 +37,7 @@ public class SiteUserService {
             throw new BadParameter("아이디 혹은 비밀번호를 확인하세요.");
         }
 
-        // TODO: deviceType을 header에서 추출하도록 수정
-        return tokenService.generateAccessRefreshToken(user, "WEB");
+        return tokenService.generateAccessRefreshToken(user);
     }
 
     @Transactional
@@ -50,7 +49,7 @@ public class SiteUserService {
     public TokenDto.AccessRefreshToken refresh(Long userId, SiteUserRefreshDto refreshDto) {
         SiteUser user = siteUserRepository.findById(userId).orElseThrow(() -> new NotFound("찾을 수 없는 사용자입니다."));
 
-        return tokenService.refreshToken(user, refreshDto.getToken(), "WEB");
+        return tokenService.refreshToken(user, refreshDto.getToken());
     }
 
     @Transactional

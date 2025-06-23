@@ -11,7 +11,5 @@ import org.springframework.stereotype.Component;
 @Setter
 public class JwtConfigProperties {
     private Integer expiresIn;
-    private Integer mobileExpiresIn;
-    private Integer tabletExpiresIn;
     private String secretKey;
 }

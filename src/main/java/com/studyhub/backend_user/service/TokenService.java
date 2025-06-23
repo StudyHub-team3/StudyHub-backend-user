@@ -22,13 +22,12 @@ public class TokenService {
     private final TokenGenerator tokenGenerator;
 
     @Transactional
-    public TokenDto.AccessRefreshToken generateAccessRefreshToken(SiteUser user, String deviceType) {
-        TokenDto.AccessRefreshToken accessRefreshToken = tokenGenerator.generateAccessRefreshToken(user.getId(), user.getEmail(), deviceType);
+    public TokenDto.AccessRefreshToken generateAccessRefreshToken(SiteUser user) {
+        TokenDto.AccessRefreshToken accessRefreshToken = tokenGenerator.generateAccessRefreshToken(user.getId(), user.getEmail());
 
         refreshTokenRepository.save(new RefreshToken(
                 user,
                 accessRefreshToken.getRefresh().getToken(),
-                deviceType,
                 LocalDateTime.now().plusSeconds(accessRefreshToken.getRefresh().getExpiresIn())
         ));
 
@@ -36,10 +35,10 @@ public class TokenService {
     }
 
     @Transactional
-    public TokenDto.AccessRefreshToken refreshToken(SiteUser user, String refreshToken, String deviceType) {
+    public TokenDto.AccessRefreshToken refreshToken(SiteUser user, String refreshToken) {
         revokeToken(refreshToken);
 
-        return generateAccessRefreshToken(user, deviceType);
+        return generateAccessRefreshToken(user);
     }
 
     @Transactional

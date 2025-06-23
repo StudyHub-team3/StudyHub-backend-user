@@ -31,26 +31,25 @@ public class TokenGenerator {
         return secretKey;
     }
 
-    public TokenDto.AccessToken generateAccessToken(Long userId, String email, String deviceType) {
-        TokenDto.JwtToken access = generateJwtToken(userId, email, deviceType, false);
+    public TokenDto.AccessToken generateAccessToken(Long userId, String email) {
+        TokenDto.JwtToken access = generateJwtToken(userId, email, false);
         return new TokenDto.AccessToken(access);
     }
 
-    public TokenDto.AccessRefreshToken generateAccessRefreshToken(Long userId, String email, String deviceType) {
-        TokenDto.JwtToken access = generateJwtToken(userId, email, deviceType, false);
-        TokenDto.JwtToken refresh = generateJwtToken(userId, email, deviceType, true);
+    public TokenDto.AccessRefreshToken generateAccessRefreshToken(Long userId, String email) {
+        TokenDto.JwtToken access = generateJwtToken(userId, email, false);
+        TokenDto.JwtToken refresh = generateJwtToken(userId, email, true);
         return new TokenDto.AccessRefreshToken(access, refresh);
     }
 
-    private TokenDto.JwtToken generateJwtToken(Long userId, String email, String deviceType, boolean refreshToken) {
-        int tokenExpireIn = getTokenExpireIn(refreshToken, deviceType); // ms
+    private TokenDto.JwtToken generateJwtToken(Long userId, String email, boolean refreshToken) {
+        int tokenExpireIn = jwtConfigProperties.getExpiresIn(); // ms
         String tokenType = refreshToken ? "refresh" : "access";
 
         String token = Jwts.builder()
                 .issuer("studyhub")
                 .subject(userId.toString())
                 .claim("email", email)
-                .claim("deviceType", deviceType)
                 .claim("tokenType", tokenType)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + tokenExpireIn * 1000L))
@@ -60,23 +59,5 @@ public class TokenGenerator {
                 .compact();
 
         return new TokenDto.JwtToken(token, tokenExpireIn);
-    }
-
-    private int getTokenExpireIn(boolean refreshToken, String deviceType) {
-        int tokenExpireIn = 60 * 60; // 60분 (AccessToken Default)
-
-        if (refreshToken) {
-            if ("MOBILE".equals(deviceType)) {
-                tokenExpireIn = jwtConfigProperties.getMobileExpiresIn();
-            }
-            else if ("TABLET".equals(deviceType)) {
-                tokenExpireIn = jwtConfigProperties.getTabletExpiresIn();
-            }
-            else {
-                tokenExpireIn = jwtConfigProperties.getExpiresIn();
-            }
-        }
-
-        return tokenExpireIn;
     }
 }
