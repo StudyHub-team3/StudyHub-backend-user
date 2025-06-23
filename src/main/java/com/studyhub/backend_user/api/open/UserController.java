@@ -24,16 +24,16 @@ public class UserController {
     }
 
     @GetMapping(value = "/my/info")
-    public ApiResponseDto<SiteUserInfoDto.Response> getMyInfo() {
-        // TODO: header에서 userId 추출 (api-gateway에서 전처리하여 header에 저장)
-        SiteUserInfoDto.Response resposne = siteUserService.getUserInfo(1L);
+    public ApiResponseDto<SiteUserInfoDto.Response> getMyInfo(@RequestHeader(value = "X-Auth-UserId") String userId) {
+        SiteUserInfoDto.Response resposne = siteUserService.getUserInfo(Long.parseLong(userId));
         return ApiResponseDto.createOk(resposne);
     }
 
     @PutMapping(value = "/my/info")
-    public ApiResponseDto<SiteUserInfoDto.Response> updateMyInfo(@RequestBody @Valid SiteUserModifyDto modifyDto) {
-        // TODO: header에서 userId 추출 (api-gateway에서 전처리하여 header에 저장)
-        SiteUserInfoDto.Response response = siteUserService.updateUserInfo(1L, modifyDto);
+    public ApiResponseDto<SiteUserInfoDto.Response> updateMyInfo(
+            @RequestHeader(value = "X-Auth-UserId") String userId,
+            @RequestBody @Valid SiteUserModifyDto modifyDto) {
+        SiteUserInfoDto.Response response = siteUserService.updateUserInfo(Long.parseLong(userId), modifyDto);
         return ApiResponseDto.createOk(response);
     }
 }

@@ -11,10 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @RestController
@@ -25,7 +23,6 @@ public class UserAuthController {
 
     @PostMapping(value = "/login")
     public ApiResponseDto<TokenDto.AccessRefreshToken> login(@RequestBody @Valid SiteUserLoginDto loginDto) {
-        // TODO: deviceType을 header에서 추출하도록 수정
         TokenDto.AccessRefreshToken accessRefreshToken = siteUserService.login(loginDto);
         return ApiResponseDto.createOk(accessRefreshToken);
     }
@@ -37,10 +34,10 @@ public class UserAuthController {
     }
 
     @PostMapping(value = "/refresh")
-    public ApiResponseDto<TokenDto.AccessRefreshToken> refresh(@RequestBody @Valid SiteUserRefreshDto refreshDto) {
-        // TODO: userId를 header에서 추출하도록 수정
-        // TODO: deviceType을 header에서 추출하도록 수정
-        TokenDto.AccessRefreshToken accessRefreshToken = siteUserService.refresh(1L, refreshDto);
+    public ApiResponseDto<TokenDto.AccessRefreshToken> refresh(
+            @RequestHeader(value = "X-Auth-UserId") String userId,
+            @RequestBody @Valid SiteUserRefreshDto refreshDto) {
+        TokenDto.AccessRefreshToken accessRefreshToken = siteUserService.refresh(Long.parseLong(userId), refreshDto);
         return ApiResponseDto.createOk(accessRefreshToken);
     }
 
