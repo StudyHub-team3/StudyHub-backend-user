@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
-@RedisHash(value = "blacklist")
+@RedisHash(value = "blacklist", timeToLive = 60 * 10) // 유효기간 10분
 public class BlacklistAccessToken {
     @Id
     private String jti;

@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Getter
 @AllArgsConstructor
-@RedisHash("refresh_token")
+@RedisHash(value = "refresh_token", timeToLive = 60 * 60 * 24 * 7) // 유효 기간 : 7일
 public class RefreshToken {
     @Id
     private Long userId;
