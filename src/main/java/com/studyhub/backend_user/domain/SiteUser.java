@@ -42,8 +42,12 @@ public class SiteUser {
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted", nullable = false)
-    @Getter @Setter
+    @Getter
     private Boolean deleted = false;
+
+    public void softDelete() {
+        this.deleted = true;
+    }
 
     public void updateUser(String name, String phoneNumber) {
         this.name = name;

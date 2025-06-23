@@ -2,10 +2,17 @@ package com.studyhub.backend_user.service;
 
 import com.studyhub.backend_user.common.exception.BadParameter;
 import com.studyhub.backend_user.common.exception.NotFound;
+import com.studyhub.backend_user.common.exception.Unauthorized;
+import com.studyhub.backend_user.secret.jwt.domain.BlacklistAccessToken;
+import com.studyhub.backend_user.secret.jwt.domain.RefreshToken;
 import com.studyhub.backend_user.domain.SiteUser;
 import com.studyhub.backend_user.domain.dto.*;
+import com.studyhub.backend_user.secret.jwt.domain.repository.BlacklistAccessTokenRepository;
+import com.studyhub.backend_user.secret.jwt.domain.repository.RefreshTokenRepository;
 import com.studyhub.backend_user.domain.repository.SiteUserRepository;
-import com.studyhub.backend_user.secret.dto.TokenDto;
+import com.studyhub.backend_user.secret.jwt.TokenGenerator;
+import com.studyhub.backend_user.secret.jwt.TokenValidator;
+import com.studyhub.backend_user.secret.jwt.domain.dto.TokenDto;
 import com.studyhub.backend_user.secret.hash.SecureHashUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SiteUserService {
     private final SiteUserRepository siteUserRepository;
-    private final TokenService tokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final BlacklistAccessTokenRepository blacklistAccessTokenRepository;
+    private final TokenGenerator tokenGenerator;
+    private final TokenValidator tokenValidator;
 
     @Transactional
     public void register(SiteUserRegisterDto registerDto) {
@@ -37,19 +47,57 @@ public class SiteUserService {
             throw new BadParameter("아이디 혹은 비밀번호를 확인하세요.");
         }
 
-        return tokenService.generateAccessRefreshToken(user);
+        TokenDto.AccessRefreshToken accessRefreshToken = tokenGenerator.generateAccessRefreshToken(user.getId(), user.getEmail());
+
+        RefreshToken refreshToken = tokenValidator.validateRefreshToken(accessRefreshToken.getRefresh().getToken());
+        refreshTokenRepository.save(refreshToken);
+
+        return accessRefreshToken;
     }
 
     @Transactional
-    public void logout(SiteUserLogoutDto logoutDto) {
-        tokenService.revokeToken(logoutDto.getToken());
-    }
-
-    @Transactional
-    public TokenDto.AccessRefreshToken refresh(Long userId, SiteUserRefreshDto refreshDto) {
+    public void delete(Long userId, String password, String accessToken) {
         SiteUser user = siteUserRepository.findById(userId).orElseThrow(() -> new NotFound("찾을 수 없는 사용자입니다."));
 
-        return tokenService.refreshToken(user, refreshDto.getToken());
+        if (!SecureHashUtils.match(password, user.getPassword())) {
+            throw new BadParameter("비밀번호를 확인하세요.");
+        }
+
+        user.softDelete();
+
+        refreshTokenRepository.deleteById(userId);
+
+        BlacklistAccessToken blackAccessToken = tokenValidator.validateAccessToken(userId, accessToken);
+
+        blacklistAccessTokenRepository.save(blackAccessToken);
+    }
+
+    @Transactional
+    public void logout(Long userId, String accessToken) {
+        refreshTokenRepository.deleteById(userId);
+
+        BlacklistAccessToken blackAccessToken = tokenValidator.validateAccessToken(userId, accessToken);
+
+        blacklistAccessTokenRepository.save(blackAccessToken);
+    }
+
+    @Transactional
+    public TokenDto.AccessRefreshToken refresh(SiteUserRefreshDto refreshDto) {
+        RefreshToken oldRefreshToken = tokenValidator.validateRefreshToken(refreshDto.getToken());
+
+        SiteUser user = siteUserRepository.findById(oldRefreshToken.getUserId()).orElseThrow(() -> new NotFound("찾을 수 없는 사용자입니다."));
+
+        RefreshToken savedRefreshToken = refreshTokenRepository.findById(user.getId()).orElseThrow(() -> new Unauthorized("토큰 재발급 권한이 없습니다."));
+        if (!savedRefreshToken.getJti().equals(oldRefreshToken.getJti())) {
+            throw new Unauthorized("토큰 재발급 권한이 없습니다.");
+        }
+
+        TokenDto.AccessRefreshToken accessRefreshToken = tokenGenerator.generateAccessRefreshToken(user.getId(), user.getEmail());
+
+        RefreshToken newRefreshToken = tokenValidator.validateRefreshToken(accessRefreshToken.getRefresh().getToken());
+        refreshTokenRepository.save(newRefreshToken);
+
+        return accessRefreshToken;
     }
 
     @Transactional

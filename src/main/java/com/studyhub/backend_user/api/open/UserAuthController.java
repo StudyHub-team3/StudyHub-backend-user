@@ -1,18 +1,17 @@
 package com.studyhub.backend_user.api.open;
 
 import com.studyhub.backend_user.common.dto.ApiResponseDto;
+import com.studyhub.backend_user.common.exception.Unauthorized;
 import com.studyhub.backend_user.domain.dto.SiteUserLoginDto;
-import com.studyhub.backend_user.domain.dto.SiteUserLogoutDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRefreshDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRegisterDto;
-import com.studyhub.backend_user.secret.dto.TokenDto;
+import com.studyhub.backend_user.secret.jwt.domain.dto.TokenDto;
 import com.studyhub.backend_user.service.SiteUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @RestController
@@ -33,17 +32,42 @@ public class UserAuthController {
         return ApiResponseDto.defaultOk();
     }
 
-    @PostMapping(value = "/refresh")
-    public ApiResponseDto<TokenDto.AccessRefreshToken> refresh(
+    @DeleteMapping(value = "/delete")
+    public ApiResponseDto<String> delete(
+            @RequestHeader(value = "Authorization") String authHeader,
             @RequestHeader(value = "X-Auth-UserId") String userId,
-            @RequestBody @Valid SiteUserRefreshDto refreshDto) {
-        TokenDto.AccessRefreshToken accessRefreshToken = siteUserService.refresh(Long.parseLong(userId), refreshDto);
+            @RequestBody @Valid String password
+    ) {
+        if (!authHeader.startsWith("Bearer")) {
+            throw new Unauthorized("인증되지 않은 요청입니다.");
+        }
+
+        String accessToken = authHeader.substring(7);
+
+        siteUserService.delete(Long.parseLong(userId), password, accessToken);
+
+        return ApiResponseDto.defaultOk();
+    }
+
+    @PostMapping(value = "/refresh")
+    public ApiResponseDto<TokenDto.AccessRefreshToken> refresh(@RequestBody @Valid SiteUserRefreshDto refreshDto) {
+        TokenDto.AccessRefreshToken accessRefreshToken = siteUserService.refresh(refreshDto);
         return ApiResponseDto.createOk(accessRefreshToken);
     }
 
     @PostMapping(value = "/logout")
-    public ApiResponseDto<String> logout(@RequestBody @Valid SiteUserLogoutDto logoutDto) {
-        siteUserService.logout(logoutDto);
+    public ApiResponseDto<String> logout(
+            @RequestHeader(value = "Authorization") String authHeader,
+            @RequestHeader(value = "X-Auth-UserId") String userId
+    ) {
+        if (!authHeader.startsWith("Bearer")) {
+            throw new Unauthorized("인증되지 않은 요청입니다.");
+        }
+
+        String accessToken = authHeader.substring(7);
+
+        siteUserService.logout(Long.parseLong(userId), accessToken);
+
         return ApiResponseDto.defaultOk();
     }
 }
