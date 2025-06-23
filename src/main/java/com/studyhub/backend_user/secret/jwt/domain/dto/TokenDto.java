@@ -1,4 +1,4 @@
-package com.studyhub.backend_user.secret.dto;
+package com.studyhub.backend_user.secret.jwt.domain.dto;
 
 import lombok.*;
 

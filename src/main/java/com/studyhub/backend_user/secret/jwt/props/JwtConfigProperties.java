@@ -1,4 +1,4 @@
-package com.studyhub.backend_user.secret.props;
+package com.studyhub.backend_user.secret.jwt.props;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class JwtConfigProperties {
+    private String header;
     private Integer expiresIn;
     private String secretKey;
 }

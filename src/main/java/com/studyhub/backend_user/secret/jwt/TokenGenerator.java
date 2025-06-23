@@ -1,7 +1,7 @@
-package com.studyhub.backend_user.secret;
+package com.studyhub.backend_user.secret.jwt;
 
-import com.studyhub.backend_user.secret.dto.TokenDto;
-import com.studyhub.backend_user.secret.props.JwtConfigProperties;
+import com.studyhub.backend_user.secret.jwt.domain.dto.TokenDto;
+import com.studyhub.backend_user.secret.jwt.props.JwtConfigProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -43,10 +44,13 @@ public class TokenGenerator {
     }
 
     private TokenDto.JwtToken generateJwtToken(Long userId, String email, boolean refreshToken) {
-        int tokenExpireIn = jwtConfigProperties.getExpiresIn(); // ms
+        int tokenExpireIn = tokenExpiresIn(refreshToken); // ms
         String tokenType = refreshToken ? "refresh" : "access";
 
+        String jti = UUID.randomUUID().toString();
+
         String token = Jwts.builder()
+                .id(jti)
                 .issuer("studyhub")
                 .subject(userId.toString())
                 .claim("email", email)
@@ -59,5 +63,15 @@ public class TokenGenerator {
                 .compact();
 
         return new TokenDto.JwtToken(token, tokenExpireIn);
+    }
+
+    private int tokenExpiresIn(boolean refreshToken) {
+        int expiresIn = 60 * 10;
+
+        if (refreshToken) {
+            expiresIn = jwtConfigProperties.getExpiresIn();
+        }
+
+        return expiresIn;
     }
 }
