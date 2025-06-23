@@ -16,7 +16,11 @@ spring:
     generate-ddl: true # 오직 테스트 환경에서만 (spring.jpa.generate-ddl)
     show-sql: true
     open-in-view: false
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
 
 jwt:
+  header: Authorization
   expires-in: 604800 # 7 days
   secret-key: ${JWT_KEY}
