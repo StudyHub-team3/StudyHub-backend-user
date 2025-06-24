@@ -47,7 +47,7 @@ public class SiteUserService {
             throw new BadParameter("아이디 혹은 비밀번호를 확인하세요.");
         }
 
-        TokenDto.AccessRefreshToken accessRefreshToken = tokenGenerator.generateAccessRefreshToken(user.getId(), user.getEmail());
+        TokenDto.AccessRefreshToken accessRefreshToken = tokenGenerator.generateAccessRefreshToken(user);
 
         RefreshToken refreshToken = tokenValidator.validateRefreshToken(accessRefreshToken.getRefresh().getToken());
         refreshTokenRepository.save(refreshToken);
@@ -92,7 +92,7 @@ public class SiteUserService {
             throw new Unauthorized("토큰 재발급 권한이 없습니다.");
         }
 
-        TokenDto.AccessRefreshToken accessRefreshToken = tokenGenerator.generateAccessRefreshToken(user.getId(), user.getEmail());
+        TokenDto.AccessRefreshToken accessRefreshToken = tokenGenerator.generateAccessRefreshToken(user);
 
         RefreshToken newRefreshToken = tokenValidator.validateRefreshToken(accessRefreshToken.getRefresh().getToken());
         refreshTokenRepository.save(newRefreshToken);

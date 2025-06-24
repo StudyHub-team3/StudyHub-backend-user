@@ -1,5 +1,6 @@
 package com.studyhub.backend_user.secret.jwt;
 
+import com.studyhub.backend_user.domain.SiteUser;
 import com.studyhub.backend_user.secret.jwt.domain.dto.TokenDto;
 import com.studyhub.backend_user.secret.jwt.props.JwtConfigProperties;
 import io.jsonwebtoken.Jwts;
@@ -32,18 +33,18 @@ public class TokenGenerator {
         return secretKey;
     }
 
-    public TokenDto.AccessToken generateAccessToken(Long userId, String email) {
-        TokenDto.JwtToken access = generateJwtToken(userId, email, false);
+    public TokenDto.AccessToken generateAccessToken(SiteUser user) {
+        TokenDto.JwtToken access = generateJwtToken(user, false);
         return new TokenDto.AccessToken(access);
     }
 
-    public TokenDto.AccessRefreshToken generateAccessRefreshToken(Long userId, String email) {
-        TokenDto.JwtToken access = generateJwtToken(userId, email, false);
-        TokenDto.JwtToken refresh = generateJwtToken(userId, email, true);
+    public TokenDto.AccessRefreshToken generateAccessRefreshToken(SiteUser user) {
+        TokenDto.JwtToken access = generateJwtToken(user, false);
+        TokenDto.JwtToken refresh = generateJwtToken(user, true);
         return new TokenDto.AccessRefreshToken(access, refresh);
     }
 
-    private TokenDto.JwtToken generateJwtToken(Long userId, String email, boolean refreshToken) {
+    private TokenDto.JwtToken generateJwtToken(SiteUser user, boolean refreshToken) {
         int tokenExpireIn = tokenExpiresIn(refreshToken); // ms
         String tokenType = refreshToken ? "refresh" : "access";
 
@@ -52,8 +53,8 @@ public class TokenGenerator {
         String token = Jwts.builder()
                 .id(jti)
                 .issuer("studyhub")
-                .subject(userId.toString())
-                .claim("email", email)
+                .subject(user.getId().toString())
+                .claim("userName", user.getName())
                 .claim("tokenType", tokenType)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + tokenExpireIn * 1000L))
