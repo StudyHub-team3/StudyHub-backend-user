@@ -2,6 +2,7 @@ package com.studyhub.backend_user.api.open;
 
 import com.studyhub.backend_user.common.dto.ApiResponseDto;
 import com.studyhub.backend_user.common.exception.Unauthorized;
+import com.studyhub.backend_user.domain.dto.SiteUserDeleteDto;
 import com.studyhub.backend_user.domain.dto.SiteUserLoginDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRefreshDto;
 import com.studyhub.backend_user.domain.dto.SiteUserRegisterDto;
@@ -32,19 +33,19 @@ public class UserAuthController {
         return ApiResponseDto.defaultOk();
     }
 
-    @DeleteMapping(value = "/delete")
+    @PostMapping(value = "/delete")
     public ApiResponseDto<String> delete(
             @RequestHeader(value = "Authorization") String authHeader,
             @RequestHeader(value = "X-Auth-UserId") String userId,
-            @RequestBody @Valid String password
-    ) {
+            @RequestBody @Valid SiteUserDeleteDto deleteDto
+            ) {
         if (!authHeader.startsWith("Bearer")) {
             throw new Unauthorized("인증되지 않은 요청입니다.");
         }
 
         String accessToken = authHeader.substring(7);
 
-        siteUserService.delete(Long.parseLong(userId), password, accessToken);
+        siteUserService.delete(Long.parseLong(userId), deleteDto, accessToken);
 
         return ApiResponseDto.defaultOk();
     }

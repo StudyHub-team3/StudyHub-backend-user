@@ -56,10 +56,10 @@ public class SiteUserService {
     }
 
     @Transactional
-    public void delete(Long userId, String password, String accessToken) {
+    public void delete(Long userId, SiteUserDeleteDto deleteDto, String accessToken) {
         SiteUser user = siteUserRepository.findById(userId).orElseThrow(() -> new NotFound("찾을 수 없는 사용자입니다."));
 
-        if (!SecureHashUtils.match(password, user.getPassword())) {
+        if (!SecureHashUtils.match(deleteDto.getPassword(), user.getPassword())) {
             throw new BadParameter("비밀번호를 확인하세요.");
         }
 
