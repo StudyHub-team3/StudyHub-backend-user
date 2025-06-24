@@ -43,6 +43,10 @@ public class SiteUserService {
             throw new NotFound("아이디 혹은 비밀번호를 확인하세요.");
         }
 
+        if (user.getDeleted()) {
+            throw new BadParameter("삭제한 사용자 입니다.");
+        }
+
         if (!SecureHashUtils.match(loginDto.getPassword(), user.getPassword())) {
             throw new BadParameter("아이디 혹은 비밀번호를 확인하세요.");
         }
