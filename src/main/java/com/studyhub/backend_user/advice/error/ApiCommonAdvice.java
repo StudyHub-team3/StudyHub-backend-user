@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Arrays;
+
 @Slf4j
 @Order(value=1) //순위 부여
 @RestControllerAdvice
@@ -65,6 +67,8 @@ public class ApiCommonAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({Exception.class})
     public ApiResponseDto<String> handleException(Exception e) {
+        log.warn(Arrays.toString(e.getStackTrace()));
+        log.warn(e.getLocalizedMessage());
         return ApiResponseDto.createError(
                 "ServerError",
                 e.getMessage()
